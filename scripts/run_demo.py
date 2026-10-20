@@ -66,6 +66,7 @@ if __name__ == "__main__":
     viz.final_layouts_figure([sd, cg, lm], G, out / f"{tag}_final_layouts.png", z0=z0)
     viz.convergence_figure([sd, cg, lm], out / f"{tag}_convergence.png")
     frames = viz.make_gif(cg, G, out / f"{tag}_cg.gif")
+    viz.potentials_figure(out / "energy_terms.png", L=E.L, k=E.k, c=E.c, R=E.R, eps=E.eps)
 
     print(f"\n{'method':<26}{'iters':>7}{'E_final':>10}{'time s':>9}{'f/g/J evals':>16}"
           f"{'crossings':>11}{'edge CV':>9}{'rate q':>8}  stop")

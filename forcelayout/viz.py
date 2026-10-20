@@ -134,3 +134,26 @@ def make_gif(res, graph, path, n_frames=70, hold=12, fps=14):
     pal = [f.quantize(colors=128, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE) for f in frames]
     pal[0].save(path, save_all=True, append_images=pal[1:], duration=int(1000 / fps), loop=0, optimize=True)
     return len(frames)
+
+
+def potentials_figure(path, L=1.0, k=1.0, c=0.3, R=8.0, eps=0.15):
+    """The two pair-energy terms as a function of node distance d."""
+    d = np.linspace(0.05, 4.0, 400)
+    spring = 0.5 * k * (d - L) ** 2
+    rep = 0.5 * c * L**2 * np.log1p(R**2 / (d**2 + eps**2))
+    fig, ax = plt.subplots(figsize=(5.6, 3.7))
+    ax.plot(d, spring, color=COLORS["Conjugate gradient (FR)"], lw=2.2, label="spring (connected pair)")
+    ax.plot(d, rep, color=CROSS, lw=2.2, label="repulsion (every pair)")
+    ax.plot(d, spring + rep, color=NODE, lw=2.2, ls="--", label="connected pair total")
+    j = np.argmin(spring + rep)
+    ax.scatter([d[j]], [(spring + rep)[j]], color=NODE, zorder=3)
+    ax.annotate(f"equilibrium d ≈ {d[j]:.2f}", (d[j], (spring + rep)[j]), (d[j] + 0.7, (spring + rep)[j] + 0.55),
+                arrowprops=dict(arrowstyle="-", color="#666"), fontsize=9.5)
+    ax.set(xlabel="distance between two nodes, d", ylabel="energy", ylim=(0, 3.2), xlim=(0, 4))
+    ax.legend(frameon=False, fontsize=9)
+    ax.grid(alpha=0.25)
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+    fig.tight_layout()
+    fig.savefig(path, dpi=200, bbox_inches="tight", facecolor="white")
+    plt.close(fig)

@@ -100,16 +100,16 @@ def write_csv(path, rows):
 
 def figure(summary, path):
     methods = list(LABEL.values())
-    fams = GRAPHS
-    x = np.arange(len(fams))
     w = 0.26
-    fig, ax = plt.subplots(1, 3, figsize=(14, 3.9))
+    fig, ax = plt.subplots(1, 3, figsize=(14, 4.3))
     panels = [
         ("median_iters", "Median iterations to converge", True),
         ("median_seconds", "Median wall-clock time (s)", True),
         ("zero_crossings_pct", "% of runs ending crossing-free\n(planar graphs only)", False),
     ]
     for a, (key, title, log) in zip(ax, panels):
+        fams = [f for f in GRAPHS if f in PLANAR] if key == "zero_crossings_pct" else GRAPHS
+        x = np.arange(len(fams))
         for i, m in enumerate(methods):
             vals = [next(s[key] for s in summary if s["family"] == f and s["method"] == m) for f in fams]
             vals = [0 if np.isnan(v) else v for v in vals]          # clusters: no crossing metric
@@ -122,8 +122,9 @@ def figure(summary, path):
             a.spines[s].set_visible(False)
         a.grid(axis="y", alpha=0.25)
     ax[2].set_ylim(0, 100)
-    ax[0].legend(frameon=False, fontsize=8.5)
-    fig.tight_layout()
+    h, l = ax[0].get_legend_handles_labels()
+    fig.legend(h, l, loc="lower center", ncol=3, frameon=False, fontsize=10)
+    fig.tight_layout(rect=(0, 0.07, 1, 1))
     fig.savefig(path, dpi=170, bbox_inches="tight", facecolor="white")
     plt.close(fig)
 
@@ -132,9 +133,18 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--seeds", type=int, default=20)
     ap.add_argument("--out", default=str(ROOT / "results"))
+    ap.add_argument("--figure-only", action="store_true",
+                    help="redraw benchmark.png from the saved benchmark_summary.csv")
     args = ap.parse_args()
     out = Path(args.out)
     out.mkdir(exist_ok=True)
+
+    if args.figure_only:
+        with open(out / "benchmark_summary.csv") as f:
+            summary = [{k: (float(v) if k not in ("family", "method") else v) for k, v in r.items()}
+                       for r in csv.DictReader(f)]
+        figure(summary, out / "benchmark.png")
+        raise SystemExit(0)
 
     rows = run(args.seeds)
     summary = summarise(rows)
