@@ -127,7 +127,7 @@ def conjugate_gradient(energy, z0, max_iter=3000, gtol=1e-4, ls_tol=1e-3, restar
     return res
 
 
-def levenberg_marquardt(energy, z0, max_iter=300, gtol=1e-4, lam0=1e-2, max_lam=1e14):
+def levenberg_marquardt(energy, z0, max_iter=3000, gtol=1e-4, lam0=1e-2, max_lam=1e14):
     """Levenberg-Marquardt for E = 1/2 ||r||^2  (Marquardt diagonal scaling,
     Nielsen's rule for updating lambda from the gain ratio)."""
     energy.reset_counters()
