@@ -66,6 +66,7 @@ if __name__ == "__main__":
     viz.final_layouts_figure([sd, cg, lm], G, out / f"{tag}_final_layouts.png", z0=z0)
     viz.convergence_figure([sd, cg, lm], out / f"{tag}_convergence.png")
     frames = viz.make_gif(cg, G, out / f"{tag}_cg.gif")
+    viz.before_after_figure(z0, cg.z, G, out / f"{tag}_before_after.png")
     viz.potentials_figure(out / "energy_terms.png", L=E.L, k=E.k, c=E.c, R=E.R, eps=E.eps)
 
     print(f"\n{'method':<26}{'iters':>7}{'E_final':>10}{'time s':>9}{'f/g/J evals':>16}"
@@ -75,4 +76,12 @@ if __name__ == "__main__":
               f"{f'{r.n_f[-1]}/{r.n_g[-1]}/{r.n_J[-1]}':>16}"
               f"{count_crossings(r.z, G.edges):>11}{edge_length_cv(r.z, G.edges):>9.3f}"
               f"{tail_rate(r.gnorm):>8.3f}  {r.stop_reason}")
+    import json
+    summary = {"graph": G.name, "n": G.n, "m": G.m, "seed": seed,
+               "start_crossings": count_crossings(z0, G.edges),
+               "methods": {r.name: {"iters": r.n_iter, "seconds": round(r.seconds[-1], 3),
+                                    "energy": round(r.energy[-1], 4),
+                                    "crossings": count_crossings(r.z, G.edges),
+                                    "rate_q": round(tail_rate(r.gnorm), 3)} for r in (sd, cg, lm)}}
+    (out / f"{tag}_summary.json").write_text(json.dumps(summary, indent=2))
     print(f"\nGIF frames: {frames}.  Files written to {out}/")

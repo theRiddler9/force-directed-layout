@@ -1,0 +1,30 @@
+{
+  "graph": "net30_s0",
+  "n": 30,
+  "m": 52,
+  "seed": 0,
+  "start_crossings": 242,
+  "methods": {
+    "Steepest descent": {
+      "iters": 1074,
+      "seconds": 2.541,
+      "energy": 112.7923,
+      "crossings": 0,
+      "rate_q": 0.994
+    },
+    "Conjugate gradient (FR)": {
+      "iters": 103,
+      "seconds": 0.264,
+      "energy": 112.7923,
+      "crossings": 0,
+      "rate_q": 0.804
+    },
+    "Levenberg-Marquardt": {
+      "iters": 476,
+      "seconds": 0.469,
+      "energy": 112.7923,
+      "crossings": 0,
+      "rate_q": 0.977
+    }
+  }
+}

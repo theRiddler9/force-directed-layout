@@ -157,3 +157,14 @@ def potentials_figure(path, L=1.0, k=1.0, c=0.3, R=8.0, eps=0.15):
     fig.tight_layout()
     fig.savefig(path, dpi=200, bbox_inches="tight", facecolor="white")
     plt.close(fig)
+
+
+def before_after_figure(z0, z1, graph, path, label="conjugate gradient"):
+    """Tangled start next to the optimised layout (title-slide image)."""
+    fig, axes = plt.subplots(1, 2, figsize=(8.2, 4.2))
+    for ax, z, t in ((axes[0], z0, "Random start"), (axes[1], z1, f"After {label}")):
+        draw_layout(ax, z, graph.edges, node_size=34)
+        ax.set_title(f"{t}\n{count_crossings(z, graph.edges)} edge crossings", fontsize=12, color="#222")
+    fig.tight_layout()
+    fig.savefig(path, dpi=200, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
