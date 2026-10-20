@@ -63,18 +63,42 @@ def clusters(k: int = 4, size: int = 6) -> Graph:
     return _make(f"clusters{k}x{size}", k * size, edges)
 
 
-def delaunay_mesh(n: int = 30, seed: int = 0) -> Graph:
-    """Delaunay triangulation of n random points: a *planar* graph with an
-    irregular structure. A crossing-free drawing is known to exist, so the
-    number of edge crossings in the result is a meaningful quality measure."""
+def _delaunay_edges(P: np.ndarray):
     from scipy.spatial import Delaunay
 
-    rng = np.random.default_rng(1000 + seed)
-    tri = Delaunay(rng.random((n, 2)))
     edges = []
-    for a, b, c in tri.simplices:
+    for a, b, c in Delaunay(P).simplices:
         edges += [(a, b), (b, c), (a, c)]
-    return _make(f"mesh{n}_s{seed}", n, edges)
+    return edges
+
+
+def delaunay_mesh(n: int = 30, seed: int = 0) -> Graph:
+    """Delaunay triangulation of n random points (dense planar graph, ~3n edges).
+
+    NOTE: not used in the benchmark.  A random triangulation cannot have all
+    edges the same length, so with uniform rest lengths the spring energy is
+    frustrated and its minimum is a *folded* drawing, even when the optimiser
+    starts from the true planar drawing.  See README ("Design notes").
+    """
+    rng = np.random.default_rng(1000 + seed)
+    return _make(f"mesh{n}_s{seed}", n, _delaunay_edges(rng.random((n, 2))))
+
+
+def gabriel_network(n: int = 30, seed: int = 0) -> Graph:
+    """Sparse random *planar* network: the Gabriel graph of n random points
+    (a Delaunay edge is kept only if no other point lies inside the circle
+    having that edge as diameter).  Connected, ~1.7n edges, irregular like a
+    real network / mind-map, and a crossing-free drawing is known to exist, so
+    'number of edge crossings' is a meaningful quality measure."""
+    rng = np.random.default_rng(1000 + seed)
+    P = rng.random((n, 2))
+    keep = []
+    for u, v in {(min(a, b), max(a, b)) for a, b in _delaunay_edges(P)}:
+        mid, r2 = (P[u] + P[v]) / 2, np.sum((P[u] - P[v]) ** 2) / 4
+        others = np.delete(np.arange(n), [u, v])
+        if not np.any(np.sum((P[others] - mid) ** 2, axis=1) < r2):
+            keep.append((u, v))
+    return _make(f"net{n}_s{seed}", n, keep)
 
 
 def random_layout(n: int, seed: int, spread: float | None = None) -> np.ndarray:
@@ -95,5 +119,8 @@ REGISTRY = {
     "tree": lambda: binary_tree(4),
     "cycle": lambda: cycle(24),
     "clusters": lambda: clusters(4, 6),
-    "mesh": lambda: delaunay_mesh(30, 0),
+    "net": lambda: gabriel_network(30, 0),
 }
+
+# graphs that admit a crossing-free drawing (crossings are meaningful for these)
+PLANAR = {"grid", "tree", "cycle", "net"}

@@ -23,16 +23,30 @@ def test_energy_never_increases_and_gradient_small_at_end(problem, method):
     assert np.linalg.norm(E.gradient(res.z)) < 1e-5
 
 
-def test_all_methods_reach_same_local_minimum_on_convex_like_case():
-    # tiny path graph: unique minimum up to rotation, so energies must agree
+def test_all_methods_agree_when_started_near_the_same_minimum():
+    # The energy is NON-convex (a 5-cycle from a random start can end as a pentagon
+    # or a twisted pentagram), so only a start close to one basin must give one answer.
     from forcelayout.graphs import cycle
 
     G = cycle(5)
     E = LayoutEnergy(G.n, G.edges)
-    z0 = random_layout(G.n, seed=1)
+    ang = 2 * np.pi * np.arange(5) / 5
+    z0 = (1.2 * np.stack([np.cos(ang), np.sin(ang)], axis=1)).ravel()
+    z0 = z0 + np.random.default_rng(0).normal(0, 0.05, z0.shape)
     finals = [m(E, z0, gtol=1e-6).energy[-1] for m in
               (steepest_descent, conjugate_gradient, levenberg_marquardt)]
     assert max(finals) - min(finals) < 1e-6
+
+
+def test_random_starts_can_reach_different_local_minima():
+    # documents the non-convexity: same graph, different starts -> different energies
+    from forcelayout.graphs import cycle
+
+    G = cycle(5)
+    E = LayoutEnergy(G.n, G.edges)
+    finals = {round(levenberg_marquardt(E, random_layout(G.n, s), gtol=1e-6).energy[-1], 3)
+              for s in range(12)}
+    assert len(finals) >= 2
 
 
 def test_snapshots_recorded_every_iteration(problem):
