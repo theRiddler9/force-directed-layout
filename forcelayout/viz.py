@@ -144,11 +144,10 @@ def potentials_figure(path, L=1.0, k=1.0, c=0.3, R=8.0, eps=0.15):
     fig, ax = plt.subplots(figsize=(5.6, 3.7))
     ax.plot(d, spring, color=COLORS["Conjugate gradient (FR)"], lw=2.2, label="spring (connected pair)")
     ax.plot(d, rep, color=CROSS, lw=2.2, label="repulsion (every pair)")
-    ax.plot(d, spring + rep, color=NODE, lw=2.2, ls="--", label="connected pair total")
     j = np.argmin(spring + rep)
+    ax.plot(d, spring + rep, color=NODE, lw=2.2, ls="--",
+            label=f"connected pair total (minimum at d = {d[j]:.2f})")
     ax.scatter([d[j]], [(spring + rep)[j]], color=NODE, zorder=3)
-    ax.annotate(f"equilibrium d ≈ {d[j]:.2f}", (d[j], (spring + rep)[j]), (d[j] + 0.7, (spring + rep)[j] + 0.55),
-                arrowprops=dict(arrowstyle="-", color="#666"), fontsize=9.5)
     ax.set(xlabel="distance between two nodes, d", ylabel="energy", ylim=(0, 3.2), xlim=(0, 4))
     ax.legend(frameon=False, fontsize=9)
     ax.grid(alpha=0.25)
