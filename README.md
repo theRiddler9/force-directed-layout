@@ -6,20 +6,6 @@ Mini project for **Engineering Optimization** course.
 
 Imagine building a social network, a computer network diagram, a mind map, or a software dependency graph. Although the graph defines which nodes are connected, it does not specify their positions. Randomly placing nodes often produces cluttered layouts with overlapping nodes, crossing edges, and inconsistent edge lengths, making the graph difficult to interpret.
 
-### The Problem: An Unreadable Graph
-- Nodes are too close together or overlap.
-- Edges cross one another, creating visual clutter.
-- Connected nodes may be too far apart or too close together.
-- The overall structure becomes difficult to understand.
-
-### The Objective: A Readable Graph
-- Keep connected nodes at reasonable distances.
-- Spread unconnected nodes apart to reduce crowding.
-- Maintain reasonable edge lengths.
-- Produce a visually organized and interpretable layout.
-
-The central challenge is to determine the optimal 2D coordinates of all nodes while preserving the graph's connectivity.
-
 ## Proposed Solution
 
 We formulate graph layout as an **unconstrained, multivariable, non-convex optimization problem**. Each node's \(x\) and \(y\) coordinates are decision variables, and the objective is to minimize a total energy function comprising:
