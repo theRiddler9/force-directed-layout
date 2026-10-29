@@ -137,7 +137,7 @@ docs/                  # Slide deck (force_directed_layout.pptx)
 
 ---
 
-## 💡esign Notes (What went wrong first)
+## Design Notes (What went wrong first)
 
 1. **Short-range vs Long-range Repulsion**:
    The initial implementation used $1/d^2$ electrostatic repulsion on a dense Delaunay triangulation, which produced 0% crossing-free layouts. When initialized directly from the true planar coordinates, the optimizer still folded into a tangled layout because folds were energetically cheaper. The issue was solved by introducing long-range logarithmic potential (Fruchterman-Reingold style) and evaluating on a sparse planar Gabriel network.
@@ -152,4 +152,6 @@ docs/                  # Slide deck (force_directed_layout.pptx)
 
 * **Akash Mansingh** ([@theRiddler9](https://github.com/theRiddler9))
   * GitHub: [https://github.com/theRiddler9](https://github.com/theRiddler9)
-  * Repository: [theRiddler9/force-directed-layout](https://github.com/theRiddler9/force-directed-layout)
+* **Gaurang Agrawal** ([@Gaurang3458](https://github.com/Gaurang3458))
+  * GitHub: [https://github.com/Gaurang3458](https://github.com/Gaurang3458)
+* **Repository**: [theRiddler9/force-directed-layout](https://github.com/theRiddler9/force-directed-layout)
