@@ -1,10 +1,8 @@
 # Force-Directed Graph Layout as Unconstrained Optimization
 
-[![Author](https://img.shields.io/badge/Author-@theRiddler9-0072B2.svg)](https://github.com/theRiddler9)
-[![Python](https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg)]()
-[![Tests](https://img.shields.io/badge/Tests-33%20Passed-success.svg)]()
 
-Mini project for the **Optimization** course (Module 1 line search, Module 2 gradient-based multivariable optimization).
+
+Mini project for **Engineering Optimization** course.
 
 Nodes repel like charged particles, and edges pull like springs. The "nicest" 2D graph drawing is the minimiser of a total energy function $E(z)$ over all $2n$ coordinate variables. We minimise this energy using three classical numerical methods written from scratch in NumPy: **Steepest Descent**, **Fletcher-Reeves Conjugate Gradient**, and **Levenberg-Marquardt**.
 
@@ -45,7 +43,7 @@ $$E(z) = \underbrace{\sum_{(i,j) \in \mathcal{E}} \frac{k}{2}(d_{ij} - L)^2}_{\t
 
 ---
 
-## 📸 Snapshot Evolution & Final Layouts
+## Results Comparison & Final Layouts
 
 ### Untangling Progression (Conjugate Gradient)
 Most untangling occurs within the initial 15 iterations; subsequent steps polish edge lengths until the gradient norm falls below $10^{-4}$.
@@ -59,7 +57,7 @@ Starting from the identical tangled random coordinates, all three algorithms rea
 
 ---
 
-## 📊 Benchmark & Empirical Findings
+## Benchmarks and Findings
 
 Evaluated over **240 runs** (20 random initial seeds $\times$ 4 graph families $\times$ 3 methods), all reaching convergence ($\|\nabla E\| < 10^{-4}$):
 
@@ -85,7 +83,7 @@ Full per-run logs and summaries are available in [`results/benchmark_runs.csv`](
 
 ---
 
-## 🚀 How to Run
+## How to Run
 
 ### Setup
 ```bash
@@ -118,7 +116,7 @@ node scripts/make_deck.js
 
 ---
 
-## 🛠️ Codebase Architecture
+## Codebase Architecture
 
 ```text
 forcelayout/
@@ -139,7 +137,7 @@ docs/                  # Slide deck (force_directed_layout.pptx)
 
 ---
 
-## 💡 Design Notes (What went wrong first)
+## 💡esign Notes (What went wrong first)
 
 1. **Short-range vs Long-range Repulsion**:
    The initial implementation used $1/d^2$ electrostatic repulsion on a dense Delaunay triangulation, which produced 0% crossing-free layouts. When initialized directly from the true planar coordinates, the optimizer still folded into a tangled layout because folds were energetically cheaper. The issue was solved by introducing long-range logarithmic potential (Fruchterman-Reingold style) and evaluating on a sparse planar Gabriel network.
@@ -150,7 +148,7 @@ docs/                  # Slide deck (force_directed_layout.pptx)
 
 ---
 
-## 👤 Author & Contributor
+## Contributors
 
 * **Akash Mansingh** ([@theRiddler9](https://github.com/theRiddler9))
   * GitHub: [https://github.com/theRiddler9](https://github.com/theRiddler9)
