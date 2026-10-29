@@ -1,11 +1,38 @@
-# Force-Directed Graph Layout as Unconstrained Optimization
-
-
+# Force-Directed Graph Layout using Unconstrained Optimization
 
 Mini project for **Engineering Optimization** course.
 
-Nodes repel like charged particles, and edges pull like springs. The "nicest" 2D graph drawing is the minimiser of a total energy function $E(z)$ over all $2n$ coordinate variables. We minimise this energy using three classical numerical methods written from scratch in NumPy: **Steepest Descent**, **Fletcher-Reeves Conjugate Gradient**, and **Levenberg-Marquardt**.
+## Problem Statement
 
+Imagine building a social network, a computer network diagram, a mind map, or a software dependency graph. Although the graph defines which nodes are connected, it does not specify their positions. Randomly placing nodes often produces cluttered layouts with overlapping nodes, crossing edges, and inconsistent edge lengths, making the graph difficult to interpret.
+
+### The Problem: An Unreadable Graph
+- Nodes are too close together or overlap.
+- Edges cross one another, creating visual clutter.
+- Connected nodes may be too far apart or too close together.
+- The overall structure becomes difficult to understand.
+
+### The Objective: A Readable Graph
+- Keep connected nodes at reasonable distances.
+- Spread unconnected nodes apart to reduce crowding.
+- Maintain reasonable edge lengths.
+- Produce a visually organized and interpretable layout.
+
+The central challenge is to determine the optimal 2D coordinates of all nodes while preserving the graph's connectivity.
+
+## Proposed Solution
+
+We formulate graph layout as an **unconstrained, multivariable, non-convex optimization problem**. Each node's \(x\) and \(y\) coordinates are decision variables, and the objective is to minimize a total energy function comprising:
+
+- **Spring Energy:** Encourages connected nodes to maintain a target edge length.
+- **Repulsion Energy:** Pushes node pairs apart to reduce crowding.
+- **Centering Energy:** Keeps the overall layout from drifting excessively away from the origin.
+
+We implement and compare three numerical optimization methods in Python using NumPy:
+
+1. **Steepest Descent**
+2. **Fletcher–Reeves Conjugate Gradient**
+3. **Levenberg–Marquardt**
 ---
 
 <p align="center">
@@ -25,7 +52,7 @@ Nodes repel like charged particles, and edges pull like springs. The "nicest" 2D
 
 ---
 
-## ⚡ Energy Formulation
+## Energy Formulation
 
 The layout is parameterized by $z = [x_0, y_0, x_1, y_1, \dots, x_{n-1}, y_{n-1}]^T \in \mathbb{R}^{2n}$.
 
@@ -106,14 +133,6 @@ Runs 240 optimizations across all 4 graph families (Grid, Tree, Cycle, Clusters)
 ```bash
 python scripts/benchmark.py --seeds 20
 ```
-
-### Generate Slide Deck
-Generates a PowerPoint presentation (`docs/force_directed_layout.pptx`) from benchmark data:
-```bash
-npm install pptxgenjs
-node scripts/make_deck.js
-```
-
 ---
 
 ## Codebase Architecture
@@ -134,17 +153,6 @@ tests/                 # Unit tests verifying gradients, Jacobians, and monotoni
 results/               # Benchmark data, summary JSON, figures, and GIF
 docs/                  # Slide deck (force_directed_layout.pptx)
 ```
-
----
-
-## Design Notes (What went wrong first)
-
-1. **Short-range vs Long-range Repulsion**:
-   The initial implementation used $1/d^2$ electrostatic repulsion on a dense Delaunay triangulation, which produced 0% crossing-free layouts. When initialized directly from the true planar coordinates, the optimizer still folded into a tangled layout because folds were energetically cheaper. The issue was solved by introducing long-range logarithmic potential (Fruchterman-Reingold style) and evaluating on a sparse planar Gabriel network.
-2. **Fair Budget Allocation**:
-   Levenberg-Marquardt was initially capped at 300 iterations (compared to 3,000 for SD/CG), giving an appearance of non-convergence. Providing LM with an equal 3,000-iteration budget proved that it converges reliably.
-3. **Non-Convexity Awareness**:
-   An initial test asserted a unique global minimum. Since graph layout energy is fundamentally non-convex with multiple basin orientations, the test was rewritten to test multiple starts.
 
 ---
 
